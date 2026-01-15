@@ -88,6 +88,21 @@ while True:
         hrac1_y = ROZLISENI_Y - velikost # posunuti zpet do okna
         posun_y *= -1                     # zmena smeru
         
+        #kolize s okraji okna
+    if hrac2_x < 0:  # presazeni horniho okraje okna
+        hrac2_x = 0  # posunuti zpet do okna
+        posun_x *= -1 # zmena smeru
+    if hrac2_y < 0:  # presazeni horniho okraje okna
+        hrac2_y = 0  # posunuti zpet do okna
+        posun_y *= -1 # zmena smeru
+    if hrac2_x > ROZLISENI_X - velikost: # presazeni dolniho okraje okna
+        hrac2_x = ROZLISENI_X - velikost # posunuti zpet do okna
+        posun_x *= -1                     # zmena smeru
+    if hrac2_y > ROZLISENI_Y - velikost: # presazeni dolniho okraje okna
+        hrac2_y = ROZLISENI_Y - velikost # posunuti zpet do okna
+        posun_y *= -1                     # zmena smeru
+        
+        
             
     # vykreslovani geometrie hrac1
     pygame.draw.rect(okno, (255, 24, 5), (hrac1_x, hrac1_y, velikost, velikost))
@@ -109,6 +124,8 @@ while True:
     clock.tick(FPS)
        
     pygame.display.update()
+    
+    
         
            
 
