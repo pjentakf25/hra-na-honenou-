@@ -50,7 +50,9 @@ while True:
     for y in range(0, 600, 100):
         for x in range(0, 800, 100):
             okno.blit(podlaha, (x, y))
-        
+            
+    stara_x = hrac1_x
+    stara_y = hrac1_y  
     #ovladani klavesnice
     stisknuto = pygame.key.get_pressed()        
     if stisknuto[pygame.K_d]:
@@ -108,14 +110,18 @@ while True:
     pygame.draw.rect(okno, (255, 24, 5), (hrac1_x, hrac1_y, velikost, velikost))
     #vykresleni geometrie hrac2
     pygame.draw.rect(okno, (170, 22, 111), (hrac2_x, hrac2_y, 60, 60))
+
+    
+    prekazky = [
     #vykresleni geometrie prekazka1
-    pygame.draw.rect(okno, (255, 255 ,255), (prekazka1_x, prekazka1_y, 250, 300))
+    pygame.draw.rect(okno, (255, 255 ,255), (prekazka1_x, prekazka1_y, 250, 300)),
     #vykresleni geometrie prekazka2
-    pygame.draw.rect(okno, (255, 255, 255), (prekazka2_x, prekazka2_y, 120, 150))
+    pygame.draw.rect(okno, (255, 255, 255), (prekazka2_x, prekazka2_y, 120, 150)),
     #vykreseleni geometrie prekazka3
     pygame.draw.rect(okno, (255, 255, 255), (prekazka3_x, prekazka3_y, 320, 100))
+    ]
     
-    #kolize s prekazkami
+    
     
        
        
