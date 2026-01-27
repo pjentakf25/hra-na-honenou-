@@ -19,12 +19,18 @@ okno = pygame.display.set_mode(ROZLISENI_OKNA)
 #souradnice prekazka1
 prekazka1_x = 420
 prekazka1_y = 100
+sirka_prekazky1 = 300
+vyska_prekazky1 = 250
 #souradnice prekazka2
 prekazka2_x = 140
 prekazka2_y = 100
+sirka_prekazky2 = 150
+vyska_prekazky2 = 100
 #souradnice prekazka3
-prekazka3_x = 100
+prekazka3_x = 200
 prekazka3_y = 500
+sirka_prekazky3 = 300
+vyska_prekazky3 = 100
 #hrac2
 hrac2_x = 720
 hrac2_y = 20
@@ -34,6 +40,10 @@ hrac1_y = 520
  #pozadi
 podlaha = pygame.image.load("pixel.jpg").convert_alpha()
 podlaha = pygame.transform.scale(podlaha, (100, 100))
+
+zdi = pygame.image.load("brick.png").convert_alpha()
+zdi = pygame.transform.scale(zdi, (50, 50))
+
 
 
 
@@ -109,17 +119,29 @@ while True:
     # vykreslovani geometrie hrac1
     pygame.draw.rect(okno, (255, 24, 5), (hrac1_x, hrac1_y, velikost, velikost))
     #vykresleni geometrie hrac2
-    pygame.draw.rect(okno, (170, 22, 111), (hrac2_x, hrac2_y, 60, 60))
+    pygame.draw.rect(okno, (170, 22, 111), (hrac2_x, hrac2_y, velikost, velikost))
 
     
-    prekazky = [
+     
     #vykresleni geometrie prekazka1
-    pygame.draw.rect(okno, (255, 255 ,255), (prekazka1_x, prekazka1_y, 250, 300)),
+    for offset_x in range(0, sirka_prekazky1, 50):
+        for offset_y in range(0, vyska_prekazky1, 50):
+            okno.blit(zdi, (prekazka1_x + offset_x, prekazka1_y + offset_y))
     #vykresleni geometrie prekazka2
-    pygame.draw.rect(okno, (255, 255, 255), (prekazka2_x, prekazka2_y, 120, 150)),
+    for offset_x in range(0, sirka_prekazky2, 50):
+        for offset_y in range(0, vyska_prekazky2, 50):
+            okno.blit(zdi, (prekazka2_x + offset_x, prekazka2_y + offset_y))
     #vykreseleni geometrie prekazka3
-    pygame.draw.rect(okno, (255, 255, 255), (prekazka3_x, prekazka3_y, 320, 100))
-    ]
+    for offset_x in range(0, sirka_prekazky3, 50):
+        for offset_y in range(0, vyska_prekazky3, 50):
+            okno.blit(zdi, (prekazka3_x + offset_x, prekazka3_y + offset_y))
+            
+            
+            
+    #kolize s prekazky
+    
+
+    
     
     
     
