@@ -5,11 +5,15 @@ pygame.init() # spusteni pygame
 clock = pygame.time.Clock()
 FPS = 60
 
+game_over_obrazovka = False
+
+
 # rozliseni okna
 ROZLISENI_OKNA = ROZLISENI_X, ROZLISENI_Y = 800, 600
 
 # vlastnosti vykreslovaneho tvaru
 velikost = 60
+
 
 posun_x = 0.1
 posun_y = 0.1
@@ -37,7 +41,7 @@ hrac2_y = 20
 #hrac1
 hrac1_x = 20
 hrac1_y = 520
- #pozadi
+#pozadi
 podlaha = pygame.image.load("pixel.jpg").convert_alpha()
 podlaha = pygame.transform.scale(podlaha, (100, 100))
 
@@ -45,18 +49,15 @@ zdi = pygame.image.load("brick.png").convert_alpha()
 zdi = pygame.transform.scale(zdi, (50, 50))
 
 
+
+
 prekazka1_rect = pygame.Rect(prekazka1_x, prekazka1_y, sirka_prekazky1, vyska_prekazky1)
 prekazka2_rect = pygame.Rect(prekazka2_x, prekazka2_y, sirka_prekazky2, vyska_prekazky2)
 prekazka3_rect = pygame.Rect(prekazka3_x, prekazka3_y, sirka_prekazky3, vyska_prekazky3)
 
 
-
-
-
-
-
-
-
+game_over = False
+game_over_obrazovka = pygame.draw.rect(okno, (255, 255, 255), ROZLISENI_OKNA)
 
 # nekonecna vykreslovaci smycka
 while True:
@@ -146,8 +147,15 @@ while True:
         hrac2_y = ROZLISENI_Y - velikost # posunuti zpet do okna
         posun_y *= -1                     # zmena smeru
         
+    if game_over:
+       game_over_obrazovka = True
+    
+    if game_over_obrazovka:
+        manualni_posun = 0
         
-            
+       
+    
+              
     # vykreslovani geometrie hrac1
     pygame.draw.rect(okno, (255, 24, 5), (hrac1_x, hrac1_y, velikost, velikost))
     #vykresleni geometrie hrac2
@@ -170,18 +178,16 @@ while True:
             
             
             
-    #kolize s prekazky
+    #game over
             
-    
-    
-    
+    hrac2_rect = pygame.Rect(hrac2_x, hrac2_y, velikost, velikost)
+    if hrac1_x == hrac2_x and hrac1_y  == hrac1_y:
+        game_over = True
 
-    
-    
-    
+   
     
        
-       
+              
        
     okno.blit(podlaha, (800, 600))
     clock.tick(FPS)
