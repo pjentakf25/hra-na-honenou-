@@ -45,6 +45,17 @@ zdi = pygame.image.load("brick.png").convert_alpha()
 zdi = pygame.transform.scale(zdi, (50, 50))
 
 
+prekazka1_rect = pygame.Rect(prekazka1_x, prekazka1_y, sirka_prekazky1, vyska_prekazky1)
+prekazka2_rect = pygame.Rect(prekazka2_x, prekazka2_y, sirka_prekazky2, vyska_prekazky2)
+prekazka3_rect = pygame.Rect(prekazka3_x, prekazka3_y, sirka_prekazky3, vyska_prekazky3)
+
+
+
+
+
+
+
+
 
 
 # nekonecna vykreslovaci smycka
@@ -74,6 +85,18 @@ while True:
     if stisknuto[pygame.K_w]:
         hrac1_y -= manualni_posun
         
+    hrac1_rect = pygame.Rect(hrac1_x, hrac1_y, velikost, velikost)
+
+    if (hrac1_rect.colliderect(prekazka1_rect) or
+            hrac1_rect.colliderect(prekazka2_rect) or
+                hrac1_rect.colliderect(prekazka3_rect)):
+   
+        hrac1_x = stara_x
+        hrac1_y = stara_y  
+    
+    stara_x2 = hrac2_x
+    stara_y2 = hrac2_y
+       
     #ovladani klavenice 2
     stisknuto = pygame.key.get_pressed()        
     if stisknuto[pygame.K_RIGHT]:
@@ -84,6 +107,15 @@ while True:
         hrac2_y += manualni_posun
     if stisknuto[pygame.K_UP]:
         hrac2_y -= manualni_posun
+        
+    hrac2_rect = pygame.Rect(hrac2_x, hrac2_y, velikost, velikost)
+
+    if (hrac2_rect.colliderect(prekazka1_rect) or
+            hrac2_rect.colliderect(prekazka2_rect) or
+                hrac2_rect.colliderect(prekazka3_rect)):
+        
+         hrac2_x = stara_x2
+         hrac2_y = stara_y2 
         
         
     #kolize s okraji okna
@@ -139,6 +171,9 @@ while True:
             
             
     #kolize s prekazky
+            
+    
+    
     
 
     
