@@ -57,9 +57,24 @@ prekazka3_rect = pygame.Rect(prekazka3_x, prekazka3_y, sirka_prekazky3, vyska_pr
 
 
 game_over = False
-game_over_obrazovka = pygame.draw.rect(okno, (255, 255, 255), ROZLISENI_OKNA)
+game_over_obrazovka = False
 
-# nekonecna vykreslovaci smycka
+if game_over_obrazovka:
+    pygame.draw.rect(okno, (2, 22, 111), (0, 0, 800, 600))
+    
+if game_over_obrazovka:
+    # tmavé pozadí (overlay)
+    pygame.draw.rect(okno, (0, 0, 0), (0, 0, 800, 600))
+
+    # okno uprostřed
+    pygame.draw.rect(okno, (40, 40, 40), (200, 150, 400, 300))
+    pygame.draw.rect(okno, (200, 200, 200), (200, 150, 400, 300), 4)
+
+
+
+
+
+#nekonecna vykreslovaci smycka
 while True:
     # kod umoznujici vypnout aplikaci
     for udalost in pygame.event.get():
@@ -147,12 +162,11 @@ while True:
         hrac2_y = ROZLISENI_Y - velikost # posunuti zpet do okna
         posun_y *= -1                     # zmena smeru
         
-    if game_over:
-       game_over_obrazovka = True
-    
-    if game_over_obrazovka:
+    if not game_over and hrac1_rect.colliderect(hrac2_rect):
+        game_over = True
+        game_over_obrazovka = True
         manualni_posun = 0
-        
+   
        
     
               
@@ -184,7 +198,17 @@ while True:
     if hrac1_x == hrac2_x and hrac1_y  == hrac1_y:
         game_over = True
 
-   
+    if game_over_obrazovka:
+    # tmavé pozadí 
+        pygame.draw.rect(okno, (0, 0, 0), (0, 0, 800, 600))
+
+    # okno uprostřed
+        pygame.draw.rect(okno, (40, 40, 40), (200, 150, 400, 300))
+        pygame.draw.rect(okno, (200, 200, 200), (200, 150, 400, 300), 4)
+    if game_over:
+        print("GAME OVER")
+
+
     
        
               
