@@ -58,6 +58,11 @@ repete = pygame.transform.scale(repete, (50, 50))
 home = pygame.image.load("home-obr.png").convert_alpha()
 home = pygame.transform.scale(home, (50, 50))
 
+mainscreen = pygame.image.load("mainscreen_wallpaper.png").convert_alpha()
+mainscreen = pygame.transform.scale(mainscreen, (800, 600))
+
+repete_screen = pygame.image.load("repeat_screen.jpg")
+repete_screen = pygame.transform.scale(repete_screen, (400, 300))
 
 prekazka1_rect = pygame.Rect(prekazka1_x, prekazka1_y, sirka_prekazky1, vyska_prekazky1)
 prekazka2_rect = pygame.Rect(prekazka2_x, prekazka2_y, sirka_prekazky2, vyska_prekazky2)
@@ -122,7 +127,7 @@ while True:
                
     # === HLAVNI NABIDKA ===
     if hlavni_nabidka:
-        okno.fill((20, 20, 20))
+        okno.blit(mainscreen, (0, 0))
     
     # Nazev hry
         nazev_font = pygame.font.Font(None, 100)
@@ -235,10 +240,10 @@ while True:
     # Game over obrazovka
     elif game_over_obrazovka:
         # tmavé pozadí 
-         pygame.draw.rect(okno, (0, 0, 0), (0, 0, 800, 600))
+         okno.blit(mainscreen, (0, 0))
         # okno uprostřed
          pygame.draw.rect(okno, (40, 40, 40), (200, 150, 400, 300))
-         pygame.draw.rect(okno, (200, 200, 200), (200, 150, 400, 300), 4)
+         okno.blit(repete_screen, (200, 150))
         #repete tlacitko
          okno.blit(repete, (220, 380))
         #home tlacitko
