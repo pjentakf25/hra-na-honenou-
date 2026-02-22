@@ -16,6 +16,21 @@ manualni_posun = 10
 hrac1_x, hrac1_y = 20, 520
 hrac2_x, hrac2_y = 720, 20
 
+# skiny
+SKINY = [
+    {"barva1": (255, 24, 5),   "barva2": (170, 22, 111), "cena": 0},
+    {"barva1": (255, 24, 5),   "barva2": (170, 22, 111), "cena": 0},
+    {"barva1": (255, 24, 5),   "barva2": (170, 22, 111), "cena": 0},
+    {"barva1": (255, 24, 5),   "barva2": (170, 22, 111), "cena": 0},
+    {"barva1": (255, 24, 5),   "barva2": (170, 22, 111), "cena": 0},
+    {"barva1": (255, 24, 5),   "barva2": (170, 22, 111), "cena": 0},
+]
+aktivni_skin = 0
+hrac1_barva = SKINY[0]["barva1"]
+hrac2_barva = SKINY[0]["barva2"]
+mince = 100
+koupeno = {0}
+
 # prekazky
 prekazka1_x, prekazka1_y = 420, 100
 sirka_prekazky1, vyska_prekazky1 = 300, 250
@@ -30,6 +45,7 @@ sirka_prekazky3, vyska_prekazky3 = 300, 100
 hlavni_nabidka = True
 hra_bezi = False
 game_over_obrazovka = False
+obchod_obrazovka = False
 
 # okno a obrazky
 okno = pygame.display.set_mode((ROZLISENI_X, ROZLISENI_Y))
@@ -39,35 +55,57 @@ repete = pygame.transform.scale(pygame.image.load("repete-obr.png").convert_alph
 home = pygame.transform.scale(pygame.image.load("home-obr.png").convert_alpha(), (50, 50))
 mainscreen = pygame.transform.scale(pygame.image.load("mainscreen_wallpaper.png").convert_alpha(), (800, 600))
 repete_screen = pygame.transform.scale(pygame.image.load("repeat_screen.jpg"), (400, 300))
+shop_tlacitko = pygame.transform.scale(pygame.image.load("cart.png"), (300, 320))
+cart = pygame.transform.scale(pygame.image.load("cart.png").convert_alpha(), (200, 60))
 
 prekazka1_rect = pygame.Rect(prekazka1_x, prekazka1_y, sirka_prekazky1, vyska_prekazky1)
 prekazka2_rect = pygame.Rect(prekazka2_x, prekazka2_y, sirka_prekazky2, vyska_prekazky2)
 prekazka3_rect = pygame.Rect(prekazka3_x, prekazka3_y, sirka_prekazky3, vyska_prekazky3)
 
-play_tlacitko = pygame.Rect(300, 320, 200, 60)
+play_tlacitko   = pygame.Rect(300, 320, 200, 60)
+shop_tlacitko   = pygame.Rect(300, 400, 200, 60)
 repeat_tlacitko = pygame.Rect(220, 380, 50, 50)
-home_tlacitko = pygame.Rect(530, 380, 50, 50)
+home_tlacitko   = pygame.Rect(530, 380, 50, 50)
+zpet_tlacitko   = pygame.Rect(20, 540, 150, 45)
 
 
 # ============================================================================
 # LOGIKA
 # ============================================================================
+def aplikuj_skin():
+    global hrac1_barva, hrac2_barva
+    hrac1_barva = SKINY[aktivni_skin]["barva1"]
+    hrac2_barva = SKINY[aktivni_skin]["barva2"]
+
+def kup_skin(index):
+    global mince, aktivni_skin
+    if index in koupeno or SKINY[index]["cena"] == 0:
+        aktivni_skin = index
+        aplikuj_skin()
+    elif mince >= SKINY[index]["cena"]:
+        mince -= SKINY[index]["cena"]
+        koupeno.add(index)
+        aktivni_skin = index
+        aplikuj_skin()
+
 def reset_game():
     global hrac1_x, hrac1_y, hrac2_x, hrac2_y, hra_bezi, game_over_obrazovka, manualni_posun
     hrac1_x, hrac1_y = 20, 520
     hrac2_x, hrac2_y = 720, 20
     manualni_posun = 10
+    aplikuj_skin()
     hra_bezi = True
     game_over_obrazovka = False
 
 def zpet_do_menu():
-    global hlavni_nabidka, hra_bezi, game_over_obrazovka
+    global hlavni_nabidka, hra_bezi, game_over_obrazovka, obchod_obrazovka
     hlavni_nabidka = True
     hra_bezi = False
     game_over_obrazovka = False
+    obchod_obrazovka = False
 
 def pohyb_hracu():
-    global hrac1_x, hrac1_y, hrac2_x, hrac2_y, game_over_obrazovka, hra_bezi
+    global hrac1_x, hrac1_y, hrac2_x, hrac2_y, game_over_obrazovka, hra_bezi, mince
     
     stisknuto = pygame.key.get_pressed()
     
@@ -105,6 +143,7 @@ def pohyb_hracu():
     
     # kolize mezi hraci
     if hrac1_rect.colliderect(hrac2_rect):
+        mince += 10
         game_over_obrazovka = True
         hra_bezi = False
 
@@ -120,6 +159,11 @@ def vykresli_menu():
     pygame.draw.rect(okno, (255, 255, 255), play_tlacitko, 3)
     play_text = pygame.font.Font(None, 50).render("PLAY", True, (255, 255, 255))
     okno.blit(play_text, play_text.get_rect(center=play_tlacitko.center))
+    pygame.draw.rect(okno, (180, 120, 0), shop_tlacitko)
+    pygame.draw.rect(okno, (255, 255, 255), shop_tlacitko, 3)
+    okno.blit(cart, cart.get_rect(center=shop_tlacitko.center))
+    mince_text = pygame.font.Font(None, 34).render(f"Mince: {mince}", True, (255, 220, 80))
+    okno.blit(mince_text, (10, 10))
 
 def vykresli_hru():
     # podlaha
@@ -140,9 +184,9 @@ def vykresli_hru():
         for offset_y in range(0, vyska_prekazky3, 50):
             okno.blit(zdi, (prekazka3_x + offset_x, prekazka3_y + offset_y))
     
-    # hraci
-    pygame.draw.rect(okno, (255, 24, 5), (hrac1_x, hrac1_y, velikost, velikost))
-    pygame.draw.rect(okno, (170, 22, 111), (hrac2_x, hrac2_y, velikost, velikost))
+    # hraci 
+    pygame.draw.rect(okno, hrac1_barva, (hrac1_x, hrac1_y, velikost, velikost))
+    pygame.draw.rect(okno, hrac2_barva, (hrac2_x, hrac2_y, velikost, velikost))
 
 def vykresli_gameover():
     okno.blit(mainscreen, (0, 0))
@@ -152,6 +196,35 @@ def vykresli_gameover():
     okno.blit(home, (530, 380))
     text = pygame.font.Font(None, 74).render("GAME OVER", True, (255, 0, 0))
     okno.blit(text, text.get_rect(center=(400, 300)))
+
+def vykresli_obchod():
+    okno.blit(mainscreen, (0, 0))
+    mince_text = pygame.font.Font(None, 34).render(f"Mince: {mince}", True, (255, 220, 80))
+    okno.blit(mince_text, (10, 10))
+
+    karta_w, karta_h = 220, 190
+    margin_x = (ROZLISENI_X - 3 * karta_w) // 4
+    for i in range(6):
+        x = margin_x + (i % 3) * (karta_w + margin_x)
+        y = 80 + (i // 3) * (karta_h + 20)
+        aktivna = i == aktivni_skin
+        barva_bg = (30, 80, 30) if aktivna else (40, 40, 60)
+        pygame.draw.rect(okno, barva_bg, (x, y, karta_w, karta_h))
+        pygame.draw.rect(okno, (255, 255, 255), (x, y, karta_w, karta_h), 2)
+        if i in koupeno and not aktivna:
+            stav = pygame.font.Font(None, 26).render("KOUPENO", True, (100, 255, 100))
+            okno.blit(stav, stav.get_rect(center=(x + karta_w // 2, y + karta_h - 20)))
+        elif aktivna:
+            stav = pygame.font.Font(None, 26).render("AKTIVNI", True, (255, 220, 80))
+            okno.blit(stav, stav.get_rect(center=(x + karta_w // 2, y + karta_h - 20)))
+        else:
+            stav = pygame.font.Font(None, 26).render(f"{SKINY[i]['cena']} minci", True, (255, 220, 80))
+            okno.blit(stav, stav.get_rect(center=(x + karta_w // 2, y + karta_h - 20)))
+
+    pygame.draw.rect(okno, (100, 40, 40), zpet_tlacitko)
+    pygame.draw.rect(okno, (255, 255, 255), zpet_tlacitko, 2)
+    zpet_text = pygame.font.Font(None, 34).render("<- ZPET", True, (255, 255, 255))
+    okno.blit(zpet_text, zpet_text.get_rect(center=zpet_tlacitko.center))
 
 
 # ============================================================================
@@ -165,13 +238,32 @@ while True:
         
         if udalost.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = udalost.pos
-            if hlavni_nabidka and play_tlacitko.collidepoint(mouse_pos):
-                hlavni_nabidka = False
-                reset_game()
-            if game_over_obrazovka and repeat_tlacitko.collidepoint(mouse_pos):
-                reset_game()
-            if game_over_obrazovka and home_tlacitko.collidepoint(mouse_pos):
-                zpet_do_menu()
+
+            if hlavni_nabidka and not obchod_obrazovka:
+                if play_tlacitko.collidepoint(mouse_pos):
+                    hlavni_nabidka = False
+                    reset_game()
+                elif shop_tlacitko.collidepoint(mouse_pos):
+                    hlavni_nabidka = False
+                    obchod_obrazovka = True
+
+            elif obchod_obrazovka:
+                if zpet_tlacitko.collidepoint(mouse_pos):
+                    zpet_do_menu()
+                else:
+                    karta_w, karta_h = 220, 190
+                    margin_x = (ROZLISENI_X - 3 * karta_w) // 4
+                    for i in range(6):
+                        x = margin_x + (i % 3) * (karta_w + margin_x)
+                        y = 80 + (i // 3) * (karta_h + 20)
+                        if pygame.Rect(x, y, karta_w, karta_h).collidepoint(mouse_pos):
+                            kup_skin(i)
+
+            elif game_over_obrazovka:
+                if repeat_tlacitko.collidepoint(mouse_pos):
+                    reset_game()
+                elif home_tlacitko.collidepoint(mouse_pos):
+                    zpet_do_menu()
         
         if udalost.type == pygame.KEYDOWN:
             if udalost.key == pygame.K_r and game_over_obrazovka:
@@ -184,6 +276,8 @@ while True:
     # VYKRESLOVANI
     if hlavni_nabidka:
         vykresli_menu()
+    elif obchod_obrazovka:
+        vykresli_obchod()
     elif hra_bezi and not game_over_obrazovka:
         vykresli_hru()
     elif game_over_obrazovka:
