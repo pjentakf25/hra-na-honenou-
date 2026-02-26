@@ -1,5 +1,6 @@
 import sys
 import pygame
+import random
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -40,6 +41,13 @@ sirka_prekazky2, vyska_prekazky2 = 150, 100
 
 prekazka3_x, prekazka3_y = 200, 500
 sirka_prekazky3, vyska_prekazky3 = 300, 100
+
+# Save zóny pro spawn hráčů (s marginem)
+SAFE_ZONA_1 = pygame.Rect(0, 450, 150, 150)    # hrac1 spawn vlevo dole
+SAFE_ZONA_2 = pygame.Rect(650, 0, 150, 150)     # hrac2 spawn vpravo nahoře
+MIN_SIRKA, MAX_SIRKA = 80, 280
+MIN_VYSKA, MAX_VYSKA = 80, 200
+MIN_MEZERA = 60  # minimální mezera mezi překážkou a okrajem/ostatními
 
 # stavy
 hlavni_nabidka = True
@@ -89,26 +97,64 @@ def kup_skin(index):
         aplikuj_skin()
 
 def reset_game():
-    global hrac1_x, hrac1_y, hrac2_x, hrac2_y, hra_bezi, game_over_obrazovka, manualni_posun
+    global hrac1_x, hrac1_y, hrac2_x, hrac2_y, hra_bezi, game_over_obrazovka, manualni_posun, prekazky_recty
     hrac1_x, hrac1_y = 20, 520
     hrac2_x, hrac2_y = 720, 20
     manualni_posun = 10
+    prekazky_recty = generuj_prekazky()
     aplikuj_skin()
     hra_bezi = True
     game_over_obrazovka = False
 
+def generuj_prekazky():
+    prekazky = []
+    pokusy = 0
+    while len(prekazky) < 3 and pokusy < 500:
+        pokusy += 1
+        w = random.randrange(100, 300, 50)
+        h = random.randrange(100, 250, 50)
+        x = random.randrange(MIN_MEZERA, ROZLISENI_X - w - MIN_MEZERA, 50)
+        y = random.randrange(MIN_MEZERA, ROZLISENI_Y - h - MIN_MEZERA, 50)
+        rect = pygame.Rect(x, y, w, h)
+        
+        # Nesmí překrývat safe zóny (s bufferem)
+        if rect.inflate(MIN_MEZERA, MIN_MEZERA).colliderect(SAFE_ZONA_1):
+            continue
+        if rect.inflate(MIN_MEZERA, MIN_MEZERA).colliderect(SAFE_ZONA_2):
+            continue
+        
+        # Nesmí být příliš blízko ostatním překážkám
+        kolize = False
+        for p in prekazky:
+            if rect.inflate(MIN_MEZERA, MIN_MEZERA).colliderect(p.inflate(MIN_MEZERA, MIN_MEZERA)):
+                kolize = True
+                break
+        if kolize:
+            continue
+        
+        prekazky.append(rect)
+    
+    return prekazky
+
+prekazky_recty = generuj_prekazky()
+
 def zpet_do_menu():
     global hlavni_nabidka, hra_bezi, game_over_obrazovka, obchod_obrazovka
+    
     hlavni_nabidka = True
     hra_bezi = False
     game_over_obrazovka = False
     obchod_obrazovka = False
-
 def pohyb_hracu():
-    global hrac1_x, hrac1_y, hrac2_x, hrac2_y, game_over_obrazovka, hra_bezi, mince
+    global hrac1_x, hrac1_y, hrac2_x, hrac2_y, game_over_obrazovka, hra_bezi, mince, prekazky_recty
+    
+
+# ... stejně pro hrac2:
+    hrac2_rect = pygame.Rect(hrac2_x, hrac2_y, velikost, velikost)
+    if any(hrac2_rect.colliderect(p) for p in prekazky_recty):
+        hrac2_x, hrac2_y = stara_x2, stara_y2
     
     stisknuto = pygame.key.get_pressed()
-    
     # hrac1
     stara_x, stara_y = hrac1_x, hrac1_y
     if stisknuto[pygame.K_d]: hrac1_x += manualni_posun
@@ -117,7 +163,7 @@ def pohyb_hracu():
     if stisknuto[pygame.K_w]: hrac1_y -= manualni_posun
     
     hrac1_rect = pygame.Rect(hrac1_x, hrac1_y, velikost, velikost)
-    if (hrac1_rect.colliderect(prekazka1_rect) or hrac1_rect.colliderect(prekazka2_rect) or hrac1_rect.colliderect(prekazka3_rect)):
+    if any(hrac1_rect.colliderect(p) for p in prekazky_recty):
         hrac1_x, hrac1_y = stara_x, stara_y
     
     if hrac1_x < 0: hrac1_x = 0
@@ -133,7 +179,7 @@ def pohyb_hracu():
     if stisknuto[pygame.K_UP]: hrac2_y -= manualni_posun
     
     hrac2_rect = pygame.Rect(hrac2_x, hrac2_y, velikost, velikost)
-    if (hrac2_rect.colliderect(prekazka1_rect) or hrac2_rect.colliderect(prekazka2_rect) or hrac2_rect.colliderect(prekazka3_rect)):
+    if any(hrac2_rect.colliderect(p) for p in prekazky_recty):
         hrac2_x, hrac2_y = stara_x2, stara_y2
     
     if hrac2_x < 0: hrac2_x = 0
@@ -159,7 +205,7 @@ def vykresli_menu():
     pygame.draw.rect(okno, (255, 255, 255), play_tlacitko, 3)
     play_text = pygame.font.Font(None, 50).render("PLAY", True, (255, 255, 255))
     okno.blit(play_text, play_text.get_rect(center=play_tlacitko.center))
-    pygame.draw.rect(okno, (180, 120, 0), shop_tlacitko)
+    pygame.draw.rect(okno, (239, 255, 39), shop_tlacitko)
     pygame.draw.rect(okno, (255, 255, 255), shop_tlacitko, 3)
     okno.blit(cart, cart.get_rect(center=shop_tlacitko.center))
     mince_text = pygame.font.Font(None, 34).render(f"Mince: {mince}", True, (255, 220, 80))
@@ -172,17 +218,10 @@ def vykresli_hru():
             okno.blit(podlaha, (x, y))
     
     # prekazky
-    for offset_x in range(0, sirka_prekazky1, 50):
-        for offset_y in range(0, vyska_prekazky1, 50):
-            okno.blit(zdi, (prekazka1_x + offset_x, prekazka1_y + offset_y))
-    
-    for offset_x in range(0, sirka_prekazky2, 50):
-        for offset_y in range(0, vyska_prekazky2, 50):
-            okno.blit(zdi, (prekazka2_x + offset_x, prekazka2_y + offset_y))
-    
-    for offset_x in range(0, sirka_prekazky3, 50):
-        for offset_y in range(0, vyska_prekazky3, 50):
-            okno.blit(zdi, (prekazka3_x + offset_x, prekazka3_y + offset_y))
+    for rect in prekazky_recty:
+        for ox in range(0, rect.w, 50):
+            for oy in range(0, rect.h, 50):
+                okno.blit(zdi, (rect.x + ox, rect.y + oy))
     
     # hraci 
     pygame.draw.rect(okno, hrac1_barva, (hrac1_x, hrac1_y, velikost, velikost))
@@ -271,8 +310,8 @@ while True:
     
     # LOGIKA
     if hra_bezi and not game_over_obrazovka:
-        pohyb_hracu()
-    
+       pohyb_hracu()
+        
     # VYKRESLOVANI
     if hlavni_nabidka:
         vykresli_menu()
