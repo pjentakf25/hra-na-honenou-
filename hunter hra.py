@@ -33,10 +33,9 @@ MIN_SIRKA, MAX_SIRKA = 80, 280
 MIN_VYSKA, MAX_VYSKA = 80, 200
 MIN_MEZERA = 60
 
-PORTAL_BARVA_A = (0, 180, 255)
-PORTAL_BARVA_B = (255, 100, 0)
+
 PORTAL_SIRKA = 20
-PORTAL_DELKA = 80
+PORTAL_DELKA = 60
 portal_cooldown = {}
 
 hlavni_nabidka = True
@@ -53,6 +52,10 @@ mainscreen = pygame.transform.scale(pygame.image.load("mainscreen_wallpaper.png"
 repete_screen = pygame.transform.scale(pygame.image.load("repeat_screen.jpg"), (400, 300))
 shop_tlacitko = pygame.transform.scale(pygame.image.load("cart.png"), (300, 320))
 cart = pygame.transform.scale(pygame.image.load("cart.png").convert_alpha(), (200, 60))
+
+PORTAL_BARVA_A = pygame.transform.scale(pygame.image.load("portal_A.png"), (50, 60))
+PORTAL_BARVA_B = pygame.transform.scale(pygame.image.load("portal_B.png"), (50, 60))
+
 
 play_tlacitko   = pygame.Rect(300, 320, 200, 60)
 shop_tlacitko   = pygame.Rect(300, 400, 200, 60)
@@ -236,15 +239,10 @@ def vykresli_hru():
         for x in range(0, 800, 100):
             okno.blit(podlaha, (x, y))
 
-    barvy = [PORTAL_BARVA_A, PORTAL_BARVA_B]
     for i, portal in enumerate(portaly):
-        pygame.draw.rect(okno, barvy[i], portal["rect"], border_radius=4)
-        pygame.draw.rect(okno, (255, 255, 255), portal["rect"], 2, border_radius=4)
-
-    for rect in prekazky_recty:
-        for ox in range(0, rect.w, 50):
-            for oy in range(0, rect.h, 50):
-                okno.blit(zdi, (rect.x + ox, rect.y + oy))
+        img = PORTAL_BARVA_A if i == 0 else PORTAL_BARVA_B
+        img = pygame.transform.scale(img, (portal["rect"].width, portal["rect"].height))
+        okno.blit(img, (portal["rect"].x, portal["rect"].y))
 
     pygame.draw.rect(okno, hrac1_barva, (hrac1_x, hrac1_y, velikost, velikost))
     pygame.draw.rect(okno, hrac2_barva, (hrac2_x, hrac2_y, velikost, velikost))
@@ -341,4 +339,4 @@ while True:
         vykresli_gameover()
 
     clock.tick(FPS)
-    pygame.display.flip()
+    pygame.display.flip()	
