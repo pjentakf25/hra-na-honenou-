@@ -35,7 +35,7 @@ MIN_MEZERA = 60
 
 
 PORTAL_SIRKA = 20
-PORTAL_DELKA = 60
+PORTAL_DELKA = 80
 portal_cooldown = {}
 
 hlavni_nabidka = True
@@ -243,7 +243,12 @@ def vykresli_hru():
         img = PORTAL_BARVA_A if i == 0 else PORTAL_BARVA_B
         img = pygame.transform.scale(img, (portal["rect"].width, portal["rect"].height))
         okno.blit(img, (portal["rect"].x, portal["rect"].y))
-
+    
+    for rect in prekazky_recty:
+        for ox in range(0, rect.w, 50):
+            for oy in range(0, rect.h, 50):
+                okno.blit(zdi, (rect.x + ox, rect.y + oy))
+    
     pygame.draw.rect(okno, hrac1_barva, (hrac1_x, hrac1_y, velikost, velikost))
     pygame.draw.rect(okno, hrac2_barva, (hrac2_x, hrac2_y, velikost, velikost))
 
