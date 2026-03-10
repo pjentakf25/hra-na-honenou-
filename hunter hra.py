@@ -1,5 +1,5 @@
 import sys
-import pygame
+import pygame 
 import random
 pygame.init()
 
@@ -238,11 +238,14 @@ def vykresli_hru():
     for y in range(0, 600, 100):
         for x in range(0, 800, 100):
             okno.blit(podlaha, (x, y))
-
     for i, portal in enumerate(portaly):
         img = PORTAL_BARVA_A if i == 0 else PORTAL_BARVA_B
-        img = pygame.transform.scale(img, (portal["rect"].width, portal["rect"].height))
-        okno.blit(img, (portal["rect"].x, portal["rect"].y))
+        if portal["zed"] == 0:
+            img = pygame.transform.rotate(img, -90)
+        elif portal["zed"] == 1:
+            img = pygame.transform.rotate(img, 90)
+        scaled_img = pygame.transform.scale(img, (portal["rect"].width, portal["rect"].height))
+        okno.blit(scaled_img, (portal["rect"].x, portal["rect"].y))
     
     for rect in prekazky_recty:
         for ox in range(0, rect.w, 50):
