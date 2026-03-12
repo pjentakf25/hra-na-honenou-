@@ -57,6 +57,12 @@ PORTAL_BARVA_A = pygame.transform.scale(pygame.image.load("portal_A.png"), (50, 
 PORTAL_BARVA_B = pygame.transform.scale(pygame.image.load("portal_B.png"), (50, 60))
 
 
+#skiny
+raven = pygame.image.load("raven_chest.png")
+king = pygame.image.load("king.png")
+pumkin = pygame.image.load("pumkin.png")
+
+
 play_tlacitko   = pygame.Rect(300, 320, 200, 60)
 shop_tlacitko   = pygame.Rect(300, 400, 200, 60)
 repeat_tlacitko = pygame.Rect(220, 380, 50, 50)
